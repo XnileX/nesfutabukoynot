@@ -1,1 +1,1 @@
-"# nesfutabukoynot" 
+CAPSTONE NAMO NI. KAPOY NAKO HEHE
