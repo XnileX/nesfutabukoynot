@@ -45,6 +45,9 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectionResult
 import java.util.concurrent.Executors
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 
 // Here we have the camera view which is displayed in Home screen
 
@@ -140,24 +143,26 @@ fun CameraView(
         // to do that, we're gonna use the getFittedBoxSize function that do that calculation for us
 
         // You can go to the implementation of that function for an explanation of how it works
-        val cameraPreviewSize = getFittedBoxSize(
-            containerSize = Size(
-                width = this.maxWidth.value,
-                height = this.maxHeight.value,
-            ),
-            boxSize = Size(
-                width = frameWidth.toFloat(),
-                height = frameHeight.toFloat()
-            )
-        )
+        // val cameraPreviewSize = getFittedBoxSize(
+        //     containerSize = Size(
+        //         width = this.maxWidth.value,
+        //         height = this.maxHeight.value,
+        //     ),
+        //     boxSize = Size(
+        //         width = frameWidth.toFloat(),
+        //         height = frameHeight.toFloat()
+        //     )
+        // )
 
         // Now that we have the exact UI dimensions of the camera preview, we apply them to a Box
         // composable, which will contain the camera preview and the results overlay on top of it,
         // both having the exact same UI dimensions
         Box(
             Modifier
-                .width(cameraPreviewSize.width.dp)
-                .height(cameraPreviewSize.height.dp),
+                .fillMaxWidth(0.9f)
+                .fillMaxSize(0.9f)
+                .align(Alignment.TopCenter)
+                .clip(RoundedCornerShape(48.dp)), // More pronounced rounded corners
         ) {
             // We're using CameraX to use the phone's camera, and since it doesn't have a prebuilt
             // composable in Jetpack Compose, we use AndroidView to implement it
@@ -225,29 +230,30 @@ fun CameraView(
                     frameHeight = frameHeight
                 )
             }
-        }
-        // Add toggle below camera preview
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(
-                onClick = { selectedModel = "fruits" },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedModel == "fruits") Color(0xFF4CAF50) else Color.LightGray
-                )
+            // Move the toggle to the bottom center of the camera preview
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 10.dp), // Adjust as needed to fit inside the black box
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text("Fruits")
-            }
-            Button(
-                onClick = { selectedModel = "vegetables" },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedModel == "vegetables") Color(0xFF4CAF50) else Color.LightGray
-                )
-            ) {
-                Text("Vegetables")
+                Button(
+                    onClick = { selectedModel = "fruits" },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedModel == "fruits") Color(0xFF4CAF50) else Color.LightGray
+                    )
+                ) {
+                    Text("Fruits")
+                }
+                Spacer(modifier = Modifier.width(30.dp)) // Add space between buttons
+                Button(
+                    onClick = { selectedModel = "vegetables" },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedModel == "vegetables") Color(0xFF4CAF50) else Color.LightGray
+                    )
+                ) {
+                    Text("Vegetables")
+                }
             }
         }
     }

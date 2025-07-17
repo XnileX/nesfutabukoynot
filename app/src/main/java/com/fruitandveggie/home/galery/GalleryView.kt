@@ -9,14 +9,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +54,8 @@ fun GalleryView(
         mutableStateOf<Uri?>(null)
     }
 
+    var selectedModel by rememberSaveable { mutableStateOf("fruits") }
+
 
     // We use this launcher later to launch a new activity to select a media file from
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -77,12 +85,38 @@ fun GalleryView(
 
         // Now that we know the selected media type, we display the appropriate composable
 
+        // Add toggle below media preview, above FAB
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp), // Adjust as needed
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = { selectedModel = "fruits" },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedModel == "fruits") Color(0xFF4CAF50) else Color.LightGray
+                )
+            ) {
+                Text("Fruits")
+            }
+            Spacer(modifier = Modifier.width(30.dp))
+            Button(
+                onClick = { selectedModel = "vegetables" },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedModel == "vegetables") Color(0xFF4CAF50) else Color.LightGray
+                )
+            ) {
+                Text("Vegetables")
+            }
+        }
+
         when (selectedMediaType) {
             "Image" -> ImageDetectionView(
                 threshold = threshold,
                 maxResults = maxResults,
                 delegate = delegate,
-                mlModel = mlModel,
+                mlModel = if (selectedModel == "fruits") 1 else 0,
                 setInferenceTime = setInferenceTime,
                 imageUri = selectedMediaUri!!,
             )
@@ -90,7 +124,7 @@ fun GalleryView(
                 threshold = threshold,
                 maxResults = maxResults,
                 delegate = delegate,
-                mlModel = mlModel,
+                mlModel = if (selectedModel == "fruits") 1 else 0,
                 setInferenceTime = setInferenceTime,
                 videoUri = selectedMediaUri!!,
             )
