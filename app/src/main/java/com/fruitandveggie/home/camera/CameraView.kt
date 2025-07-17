@@ -7,11 +7,17 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -38,6 +44,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.objectdetector.ObjectDetectionResult
 import java.util.concurrent.Executors
+import androidx.compose.ui.graphics.Color
 
 // Here we have the camera view which is displayed in Home screen
 
@@ -100,6 +107,9 @@ fun CameraView(
         mutableStateOf(true)
     }
 
+    // Add state for selected model
+    var selectedModel by remember { mutableStateOf("fruits") }
+
     // We need the following objects setup the camera preview later
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -151,95 +161,62 @@ fun CameraView(
         ) {
             // We're using CameraX to use the phone's camera, and since it doesn't have a prebuilt
             // composable in Jetpack Compose, we use AndroidView to implement it
+            val previewView = remember { PreviewView(context) }
             AndroidView(
-                factory = { ctx ->
-                    // We start by instantiating the camera preview view to be displayed
-                    val previewView = PreviewView(ctx)
-                    val executor = ContextCompat.getMainExecutor(ctx)
-                    cameraProviderFuture.addListener({
-                        val cameraProvider = cameraProviderFuture.get()
-
-                        // We set a surface for the camera input feed to be displayed in, which is
-                        // in the camera preview view we just instantiated
-                        val preview = Preview.Builder().build().also {
-                            it.setSurfaceProvider(previewView.surfaceProvider)
-                        }
-
-                        // We specify what phone camera to use. In our case it's the back camera
-                        val cameraSelector = CameraSelector.Builder()
-                            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                            .build()
-
-                        // We instantiate an image analyser to apply some transformations on the
-                        // input frame before feeding it to the object detector
-                        val imageAnalyzer =
-                            ImageAnalysis.Builder()
-                                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                                .build()
-
-                        // Now we're ready to apply object detection. For a better performance, we
-                        // execute the object detection process in a new thread.
-                        val backgroundExecutor = Executors.newSingleThreadExecutor()
-
-                        backgroundExecutor.execute {
-
-                            // To apply object detection, we use our ObjectDetectorHelper class,
-                            // which abstracts away the specifics of using MediaPipe  for object
-                            // detection from the UI elements of the app
-                            val objectDetectorHelper =
-                                ObjectDetectorHelper(
-                                    context = ctx,
-                                    threshold = threshold,
-                                    currentDelegate = delegate,
-                                    currentModel = mlModel,
-                                    maxResults = maxResults,
-                                    // Since we're detecting objects in a live camera feed, we need
-                                    // to have a way to listen for the results
-                                    objectDetectorListener = ObjectDetectorListener(
-                                        onErrorCallback = { _, _ -> },
-                                        onResultsCallback = {
-                                            // On receiving results, we now have the exact camera
-                                            // frame dimensions, so we set them here
-                                            frameHeight = it.inputImageHeight
-                                            frameWidth = it.inputImageWidth
-
-                                            // Then we check if the camera view is still active,
-                                            // if so, we set the state of the results and
-                                            // inference time.
-                                            if (active) {
-                                                results = it.results.first()
-                                                setInferenceTime(it.inferenceTime.toInt())
-                                            }
-                                        }
-                                    ),
-                                    runningMode = RunningMode.LIVE_STREAM
-                                )
-
-                            // Now that we have our ObjectDetectorHelper instance, we set is as an
-                            // analyzer and start detecting objects from the camera live stream
-                            imageAnalyzer.setAnalyzer(
-                                backgroundExecutor,
-                                objectDetectorHelper::detectLivestreamFrame
-                            )
-                        }
-
-                        // We close any currently open camera just in case, then open up
-                        // our own to be display the live camera feed
-                        cameraProvider.unbindAll()
-                        cameraProvider.bindToLifecycle(
-                            lifecycleOwner,
-                            cameraSelector,
-                            imageAnalyzer,
-                            preview
-                        )
-                    }, executor)
-                    // We return our preview view from the AndroidView factory to display it
-                    previewView
-                },
+                factory = { previewView },
                 modifier = Modifier.fillMaxSize(),
             )
+            // Rebind camera/analyzer when selectedModel changes
+            LaunchedEffect(selectedModel) {
+                val executor = ContextCompat.getMainExecutor(context)
+                val cameraProvider = cameraProviderFuture.get()
+                val preview = Preview.Builder().build().also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
+                }
+                val cameraSelector = CameraSelector.Builder()
+                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                    .build()
+                val imageAnalyzer =
+                    ImageAnalysis.Builder()
+                        .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                        .build()
+                val backgroundExecutor = Executors.newSingleThreadExecutor()
+                backgroundExecutor.execute {
+                    val objectDetectorHelper =
+                        ObjectDetectorHelper(
+                            context = context,
+                            threshold = threshold,
+                            currentDelegate = delegate,
+                            currentModel = if (selectedModel == "fruits") 1 else 0,
+                            maxResults = maxResults,
+                            objectDetectorListener = ObjectDetectorListener(
+                                onErrorCallback = { _, _ -> },
+                                onResultsCallback = {
+                                    frameHeight = it.inputImageHeight
+                                    frameWidth = it.inputImageWidth
+                                    if (active) {
+                                        results = it.results.first()
+                                        setInferenceTime(it.inferenceTime.toInt())
+                                    }
+                                }
+                            ),
+                            runningMode = RunningMode.LIVE_STREAM
+                        )
+                    imageAnalyzer.setAnalyzer(
+                        backgroundExecutor,
+                        objectDetectorHelper::detectLivestreamFrame
+                    )
+                }
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    imageAnalyzer,
+                    preview
+                )
+            }
             // Finally, we check for current results, if there's any, we display the results overlay
             results?.let {
                 ResultsOverlay(
@@ -247,6 +224,30 @@ fun CameraView(
                     frameWidth = frameWidth,
                     frameHeight = frameHeight
                 )
+            }
+        }
+        // Add toggle below camera preview
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = { selectedModel = "fruits" },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedModel == "fruits") Color(0xFF4CAF50) else Color.LightGray
+                )
+            ) {
+                Text("Fruits")
+            }
+            Button(
+                onClick = { selectedModel = "vegetables" },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedModel == "vegetables") Color(0xFF4CAF50) else Color.LightGray
+                )
+            ) {
+                Text("Vegetables")
             }
         }
     }
