@@ -11,6 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.unit.dp
 import com.fruitandveggie.R
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.background
 
 @Composable
 fun VideoScreen() {
@@ -29,6 +31,7 @@ fun VideoScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFB5C18E))
             .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {

@@ -1,5 +1,6 @@
 package com.fruitandveggie.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -19,7 +20,10 @@ fun TabsTopBar(
     selectedTabIndex: Int,
     setSelectedTabIndex: (Int) -> Unit,
 ) {
-    TabRow(selectedTabIndex = selectedTabIndex) {
+    TabRow(
+        selectedTabIndex = selectedTabIndex,
+        containerColor = Color(0xFFB5C18E) // Set background color
+    ) {
         Tab(
             unselectedContentColor = Color.Gray,
             selected = selectedTabIndex == 0,

@@ -37,6 +37,7 @@ import com.fruitandveggie.games.GuessingGameScreen
 import androidx.compose.material3.Text
 import com.fruitandveggie.games.VideoScreen
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.ui.graphics.Color
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +92,9 @@ fun ObjectDetectionExampleApp() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        NavigationBar {
+                        NavigationBar(
+                            containerColor = Color(0xFFB5C18E)
+                        ) {
                             NavigationBarItem(
                                 selected = selectedTab == 0,
                                 onClick = { selectedTab = 0 },

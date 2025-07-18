@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.background
 
 // Here we have the camera view which is displayed in Home screen
 
@@ -131,7 +132,8 @@ fun CameraView(
     // Next we describe the UI of this camera view.
     BoxWithConstraints(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(Color(0xFFB5C18E)), // Set background color
         contentAlignment = Alignment.TopCenter,
     ) {
         // There's a specific behavior we need to achieve here: we want to have the whole camera
@@ -160,7 +162,7 @@ fun CameraView(
         Box(
             Modifier
                 .fillMaxWidth(0.9f)
-                .fillMaxSize(0.9f)
+                .fillMaxSize(0.8f)
                 .align(Alignment.TopCenter)
                 .clip(RoundedCornerShape(48.dp)), // More pronounced rounded corners
         ) {
@@ -243,7 +245,7 @@ fun CameraView(
                         containerColor = if (selectedModel == "fruits") Color(0xFF4CAF50) else Color.LightGray
                     )
                 ) {
-                    Text("Fruits")
+                    Text("P40T@S", color = Color(0xFFF1F1F1))
                 }
                 Spacer(modifier = Modifier.width(30.dp)) // Add space between buttons
                 Button(
@@ -252,7 +254,7 @@ fun CameraView(
                         containerColor = if (selectedModel == "vegetables") Color(0xFF4CAF50) else Color.LightGray
                     )
                 ) {
-                    Text("Vegetables")
+                    Text("G0L4Y", color = Color(0xFFF1F1F1))
                 }
             }
         }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -66,7 +67,7 @@ fun GalleryView(
         },
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(Color(0xFFB5C18E))) {
         // We first want to figure out the type of the selected media, which is one of
         // the following three cases: Image, Video, Unknown.
 
@@ -158,7 +159,7 @@ fun GalleryView(
             contentColor = Color.White,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .absoluteOffset((-20).dp, (-100).dp)
+                .absoluteOffset((-20).dp, (-80).dp)
         ) {
             Icon(
                 Icons.Filled.Add,
