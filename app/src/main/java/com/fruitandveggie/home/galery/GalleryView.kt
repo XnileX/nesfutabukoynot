@@ -96,7 +96,7 @@ fun GalleryView(
             Button(
                 onClick = { selectedModel = "fruits" },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedModel == "fruits") Color(0xFF4CAF50) else Color.LightGray
+                    containerColor = if (selectedModel == "fruits") Color(0xFF88581C) else Color.LightGray
                 )
             ) {
                 Text("Fruits")
@@ -105,7 +105,7 @@ fun GalleryView(
             Button(
                 onClick = { selectedModel = "vegetables" },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedModel == "vegetables") Color(0xFF4CAF50) else Color.LightGray
+                    containerColor = if (selectedModel == "vegetables") Color(0xFF88581C) else Color.LightGray
                 )
             ) {
                 Text("Vegetables")

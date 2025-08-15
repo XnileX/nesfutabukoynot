@@ -31,6 +31,8 @@ import com.fruitandveggie.ui.theme.Turquoise
 import kotlin.math.max
 import kotlin.math.min
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.background
 
 
 @Composable
@@ -45,7 +47,9 @@ fun OptionsScreen(
     var mlModelDropdownExpanded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.statusBarsPadding()
+        modifier = Modifier
+            .statusBarsPadding()
+            .background(Color(0xFFB5C18E)),
     ) {
         FruitsAndVegetableDetectionBanner(
             onBackButtonClick = onBackButtonClick,

@@ -242,19 +242,19 @@ fun CameraView(
                 Button(
                     onClick = { selectedModel = "fruits" },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedModel == "fruits") Color(0xFF4CAF50) else Color.LightGray
+                        containerColor = if (selectedModel == "fruits") Color(0xFF88581C) else Color.LightGray
                     )
                 ) {
-                    Text("P40T@S", color = Color(0xFFF1F1F1))
+                    Text("Fruits", color = Color(0xFF0E0707))
                 }
                 Spacer(modifier = Modifier.width(30.dp)) // Add space between buttons
                 Button(
                     onClick = { selectedModel = "vegetables" },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedModel == "vegetables") Color(0xFF4CAF50) else Color.LightGray
+                        containerColor = if (selectedModel == "vegetables") Color(0xFF88581C) else Color.LightGray
                     )
                 ) {
-                    Text("G0L4Y", color = Color(0xFFF1F1F1))
+                    Text("Vegetables", color = Color(0xFF0E0707))
                 }
             }
         }
